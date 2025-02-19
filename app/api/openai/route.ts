@@ -15,7 +15,7 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, model } = await req.json();
+    const { messages, model, systemPrompt, temperature, maxTokens } = await req.json();
 
     if (!process.env.OPENAI_API_KEY) {
       return new Response("Missing OpenAI API Key", { status: 500 });
@@ -26,16 +26,34 @@ export async function POST(req: NextRequest) {
     if (!model) {
       return new Response("Missing model parameter", { status: 400 });
     }
+    if (!systemPrompt) {
+      return new Response("Missing systemPrompt parameter", { status: 400 });
+    }
+    if (temperature < 0 || temperature > 2) {
+      return new Response("Invalid temperature", { status: 400 });
+    }
+    if (maxTokens < 1 || maxTokens > 4000) {
+      return new Response("Invalid maxTokens", { status: 400 });
+    }
 
-    // Create streaming chat
-    const stream = await openai.chat.completions.create({
+    // Create completion options based on model
+    const completionOptions: any = {
       model,
       messages: [
-        { role: "system", content: "You are a helpful assistant." },
+        { role: "system", content: systemPrompt },
         ...messages.map((msg: Message) => ({ role: msg.role, content: msg.content })),
       ],
       stream: true,
-    });
+    };
+
+    // Only add temperature and max_completion_tokens for supported models
+    if (!model.includes('o3-mini')) {
+      completionOptions.temperature = temperature;
+      completionOptions.max_completion_tokens = maxTokens;
+    }
+
+    // Create streaming chat
+    const completion = await openai.chat.completions.create(completionOptions) as unknown as AsyncIterable<OpenAI.Chat.ChatCompletionChunk>;
 
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
@@ -43,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     (async () => {
       try {
-        for await (const chunk of stream) {
+        for await (const chunk of completion) {
           const content = chunk.choices[0]?.delta?.content || "";
           if (content) {
             await writer.write(

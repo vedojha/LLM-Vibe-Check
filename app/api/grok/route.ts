@@ -11,13 +11,22 @@ interface Message {
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
+    const { messages, systemPrompt, temperature, maxTokens } = await req.json();
 
     if (!process.env.XAI_API_KEY) {
       return new Response("Missing xAI API Key", { status: 500 });
     }
     if (!messages || !Array.isArray(messages)) {
       return new Response("Missing messages", { status: 400 });
+    }
+    if (!systemPrompt) {
+      return new Response("Missing systemPrompt parameter", { status: 400 });
+    }
+    if (temperature < 0 || temperature > 2) {
+      return new Response("Invalid temperature", { status: 400 });
+    }
+    if (maxTokens < 1 || maxTokens > 4000) {
+      return new Response("Invalid maxTokens", { status: 400 });
     }
 
     const openai = new OpenAI({
@@ -31,13 +40,15 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "system",
-          content: "You are Grok, a chatbot inspired by The Hitchhiker's Guide to the Galaxy.",
+          content: systemPrompt,
         },
         ...messages.map((msg: Message) => ({
           role: msg.role,
           content: msg.content,
         })),
       ],
+      temperature,
+      max_tokens: maxTokens,
       stream: true,
     });
 

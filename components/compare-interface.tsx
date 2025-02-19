@@ -11,6 +11,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
 import type { ChatSession, CompareMessage } from "@/types/chat"
 import { SynthesisModal } from "@/components/synthesis-modal"
+import { ChatControlsSidebar } from "@/components/chat-controls-sidebar"
+import { cn } from "@/lib/utils"
 
 interface Message {
   role: "user" | "assistant"
@@ -55,6 +57,10 @@ export function CompareInterface() {
   const [synthesisContent, setSynthesisContent] = React.useState("")
   const [isSynthesizing, setIsSynthesizing] = React.useState(false)
   const [selectedModels, setSelectedModels] = React.useState<string[]>([MODELS[0].id])
+  const [systemPrompt, setSystemPrompt] = React.useState("You are a helpful assistant.")
+  const [temperature, setTemperature] = React.useState(0.7)
+  const [maxTokens, setMaxTokens] = React.useState(2048)
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
 
   // Load session if exists
   React.useEffect(() => {
@@ -178,6 +184,9 @@ export function CompareInterface() {
           body: JSON.stringify({
             messages,
             model: model.id,
+            systemPrompt,
+            temperature,
+            maxTokens,
           }),
         })
 
@@ -332,7 +341,10 @@ export function CompareInterface() {
 
   return (
     <div className="w-full flex justify-center">
-      <Card className="w-[1400px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
+      <Card className={cn(
+        "w-[1400px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none",
+        isSidebarOpen && "pointer-events-none"
+      )}>
         <div className="w-full flex flex-col h-full">
           {/* Model Selection Pills */}
           <div className="border-b p-4 flex-shrink-0">
@@ -467,6 +479,16 @@ export function CompareInterface() {
         onClose={() => setIsSynthesisModalOpen(false)}
         content={synthesisContent}
         isLoading={isSynthesizing}
+      />
+
+      <ChatControlsSidebar
+        systemPrompt={systemPrompt}
+        temperature={temperature}
+        maxTokens={maxTokens}
+        onSystemPromptChange={setSystemPrompt}
+        onTemperatureChange={setTemperature}
+        onMaxTokensChange={setMaxTokens}
+        onOpenChange={setIsSidebarOpen}
       />
     </div>
   )

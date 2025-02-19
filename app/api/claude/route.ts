@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages, model } = await req.json();
+    const { messages, model, systemPrompt, temperature, maxTokens } = await req.json();
 
     const apiKey = getApiKey("ANTHROPIC_API_KEY");
     if (!apiKey) {
@@ -22,6 +22,15 @@ export async function POST(req: NextRequest) {
     }
     if (!model) {
       return new Response("Missing model parameter", { status: 400 });
+    }
+    if (!systemPrompt) {
+      return new Response("Missing systemPrompt parameter", { status: 400 });
+    }
+    if (temperature < 0 || temperature > 2) {
+      return new Response("Invalid temperature", { status: 400 });
+    }
+    if (maxTokens < 1 || maxTokens > 4000) {
+      return new Response("Invalid maxTokens", { status: 400 });
     }
 
     // Format messages
@@ -45,7 +54,9 @@ export async function POST(req: NextRequest) {
     const requestBody = {
       model,
       messages: formattedMessages,
-      max_tokens: 2048,
+      system: systemPrompt,
+      max_tokens: maxTokens,
+      temperature,
       stream: true,
     };
 

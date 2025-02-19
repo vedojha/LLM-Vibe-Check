@@ -17,6 +17,8 @@ import { Card } from "@/components/ui/card"
 import { useRouter, useSearchParams } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
 import type { ChatSession, Message } from "@/types/chat"
+import { ChatControlsSidebar } from "@/components/chat-controls-sidebar"
+import { cn } from "@/lib/utils"
 
 const MODELS = [
   {
@@ -51,6 +53,10 @@ export function ChatInterface() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [selectedModel, setSelectedModel] = React.useState(MODELS[0].id)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const [systemPrompt, setSystemPrompt] = React.useState("You are a helpful assistant.")
+  const [temperature, setTemperature] = React.useState(0.7)
+  const [maxTokens, setMaxTokens] = React.useState(2048)
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
 
   // Load chat session on mount or when sessionId changes
   React.useEffect(() => {
@@ -166,6 +172,9 @@ export function ChatInterface() {
         body: JSON.stringify({
           messages: newMessages,
           model: model.id,
+          systemPrompt,
+          temperature,
+          maxTokens,
         }),
       })
 
@@ -222,7 +231,10 @@ export function ChatInterface() {
 
   return (
     <div className="w-full flex justify-center">
-      <Card className="w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
+      <Card className={cn(
+        "w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none",
+        isSidebarOpen && "pointer-events-none"
+      )}>
         <div className="w-full flex flex-col h-full">
           <div className="border-b p-4 flex-shrink-0">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
@@ -297,6 +309,16 @@ export function ChatInterface() {
           </div>
         </div>
       </Card>
+      
+      <ChatControlsSidebar
+        systemPrompt={systemPrompt}
+        temperature={temperature}
+        maxTokens={maxTokens}
+        onSystemPromptChange={setSystemPrompt}
+        onTemperatureChange={setTemperature}
+        onMaxTokensChange={setMaxTokens}
+        onOpenChange={setIsSidebarOpen}
+      />
     </div>
   )
 } 
