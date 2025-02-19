@@ -106,11 +106,13 @@ const data = {
       items: [
         {
           title: "Introduction",
-          url: "#",
+          url: "/docs/introduction",
+          component: Link,
         },
         {
           title: "Get Started",
-          url: "#",
+          url: "/docs/getting-started",
+          component: Link,
         },
       ],
     },

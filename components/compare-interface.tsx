@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Send } from "lucide-react"
+import { Send, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card"
 import { useRouter, useSearchParams } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
 import type { ChatSession, CompareMessage } from "@/types/chat"
+import { SynthesisModal } from "@/components/synthesis-modal"
 
 interface Message {
   role: "user" | "assistant"
@@ -49,6 +50,9 @@ export function CompareInterface() {
   const [input, setInput] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const [isSynthesisModalOpen, setIsSynthesisModalOpen] = React.useState(false)
+  const [synthesisContent, setSynthesisContent] = React.useState("")
+  const [isSynthesizing, setIsSynthesizing] = React.useState(false)
 
   // Load session if exists
   React.useEffect(() => {
@@ -236,6 +240,81 @@ export function CompareInterface() {
     }
   }
 
+  const handleSynthesis = async () => {
+    setIsSynthesisModalOpen(true)
+    setIsSynthesizing(true)
+
+    try {
+      // Get the last message from each model
+      const lastMessages = Object.entries(modelMessages).map(([modelId, messages]) => {
+        const lastMessage = messages[messages.length - 1]
+        return `${modelId}: ${lastMessage?.content || ''}`
+      }).join("\n\n")
+
+      const prompt = `Analyze the following AI model responses and provide a structured analysis with these sections:
+
+1. Comprehensive Synthesis
+Combine the unique insights from each model into a coherent analysis. Focus on the main themes and how different perspectives complement each other.
+
+2. Notable Differences in Their Approaches
+Highlight the distinct characteristics of each model's response, including differences in:
+- Style and tone
+- Depth of analysis
+- Unique perspectives or insights
+- Special features or approaches
+
+3. Summary of Key Points
+List the main points that multiple models agreed upon, emphasizing the consensus views and shared insights.
+
+Format each section with clear headers and use paragraphs for readability.
+
+Responses:
+${lastMessages}`
+
+      const response = await fetch('/api/openai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: prompt }],
+          model: 'o3-mini'
+        })
+      })
+
+      if (!response.ok) throw new Error('Synthesis failed')
+
+      if (response.body) {
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let synthesis = ""
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split("\n")
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              try {
+                const data = JSON.parse(line.slice(5))
+                synthesis += data.content
+                setSynthesisContent(synthesis)
+              } catch (e) {
+                console.error("Error parsing SSE data:", e)
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Synthesis error:", error)
+      setSynthesisContent("Sorry, there was an error synthesizing the responses.")
+    } finally {
+      setIsSynthesizing(false)
+    }
+  }
+
   return (
     <div className="w-full h-[calc(100vh-4rem)] flex flex-col p-4 gap-4">
       <div className="grid grid-cols-4 gap-4 h-[calc(100vh-13rem)]">
@@ -304,8 +383,28 @@ export function CompareInterface() {
           >
             <Send className="h-5 w-5" />
           </Button>
+          {modelMessages[Object.keys(modelMessages)[0]].length > 0 && (
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              onClick={handleSynthesis}
+              disabled={isLoading || isSynthesizing}
+              className="h-[44px] w-[44px] rounded-full shrink-0"
+              title="Synthesize AI responses"
+            >
+              <Wand2 className="h-5 w-5" />
+            </Button>
+          )}
         </form>
       </div>
+
+      <SynthesisModal
+        isOpen={isSynthesisModalOpen}
+        onClose={() => setIsSynthesisModalOpen(false)}
+        content={synthesisContent}
+        isLoading={isSynthesizing}
+      />
     </div>
   )
 } 
