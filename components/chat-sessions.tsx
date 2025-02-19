@@ -31,4 +31,11 @@ export function useChatSessions() {
 
   console.log("Returning chat items:", chatItems) // Debug log
   return chatItems
+}
+
+export type ChatSession = {
+  id: string
+  title: string
+  url: string
+  subtitle: string
 } 

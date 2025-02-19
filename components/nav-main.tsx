@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon, Trash2 } from "lucide-react"
 import React from "react"
 import Link from "next/link"
 
@@ -20,6 +20,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { useChatSessions } from "@/components/chat-sessions"
+import type { ChatSession } from "@/components/chat-sessions"
 
 interface SubItem {
   title: string
@@ -58,6 +59,20 @@ export function NavMain({ items }: { items: NavItem[] }) {
     setOpenSections(prev => ({ ...prev, [title]: !prev[title] }))
   }
 
+  const handleDeleteSession = (sessionId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const sessions = JSON.parse(localStorage.getItem("chatSessions") || "[]")
+    const updatedSessions = sessions.filter((session: ChatSession) => 
+      session.id !== sessionId
+    )
+    localStorage.setItem("chatSessions", JSON.stringify(updatedSessions))
+    
+    // Force a re-render of the sidebar
+    window.location.reload()
+  }
+
   // Update history items dynamically
   const updatedItems = items.map(item => {
     if (item.title === "History") {
@@ -94,35 +109,37 @@ export function NavMain({ items }: { items: NavItem[] }) {
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem 
                       key={`${subItem.title}-${subItem.url.split('=')[1] || ''}`}
+                      className="group relative"
                     >
                       <SidebarMenuSubButton asChild>
                         {'component' in subItem && subItem.component ? (
                           <subItem.component 
                             href={subItem.url}
+                            className="flex w-full items-center"
                             onClick={(e: React.MouseEvent) => {
                               e.stopPropagation()
                             }}
                           >
-                            <span>{subItem.title}</span>
-                            {subItem.subtitle && (
-                              <span className="ml-auto text-xs text-muted-foreground">
-                                {subItem.subtitle}
-                              </span>
+                            <span className="truncate">{subItem.title}</span>
+                            {item.title === "History" && (
+                              <button
+                                onClick={(e) => handleDeleteSession(subItem.url.split('=')[1], e)}
+                                className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-muted-foreground hover:text-destructive"
+                                aria-label="Delete chat session"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             )}
                           </subItem.component>
                         ) : (
                           <a 
                             href={subItem.url}
+                            className="flex w-full items-center"
                             onClick={(e) => {
                               e.stopPropagation()
                             }}
                           >
                             <span>{subItem.title}</span>
-                            {subItem.subtitle && (
-                              <span className="ml-auto text-xs text-muted-foreground">
-                                {subItem.subtitle}
-                              </span>
-                            )}
                           </a>
                         )}
                       </SidebarMenuSubButton>

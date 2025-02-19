@@ -152,17 +152,16 @@ export function CompareInterface() {
       sessions.unshift(newSession)
       localStorage.setItem("chatSessions", JSON.stringify(sessions))
       await router.replace(`/compare?session=${newSession.id}`)  // await the navigation
-    } else {
-      saveSession(newModelMessages)
     }
     
     setInput("")
 
     // Send request to all models simultaneously
     try {
+      const finalModelMessages = { ...newModelMessages }
       const requests = MODELS.map(async model => {
         const endpoint = `/api/${model.provider}`
-        const messages = [...modelMessages[model.id], userMessage]
+        const messages = [...newModelMessages[model.id], userMessage]
 
         const response = await fetch(endpoint, {
           method: "POST",
@@ -182,6 +181,7 @@ export function CompareInterface() {
           const decoder = new TextDecoder()
           let assistantMessage = { role: "assistant" as const, content: "" }
           
+          finalModelMessages[model.id] = [...finalModelMessages[model.id], assistantMessage]
           setModelMessages(prev => ({
             ...prev,
             [model.id]: [...prev[model.id], assistantMessage]
@@ -199,6 +199,7 @@ export function CompareInterface() {
                 try {
                   const data = JSON.parse(line.slice(5))
                   assistantMessage.content += data.content
+                  finalModelMessages[model.id][finalModelMessages[model.id].length - 1] = { ...assistantMessage }
                   setModelMessages(prev => ({
                     ...prev,
                     [model.id]: [
@@ -216,7 +217,8 @@ export function CompareInterface() {
       })
 
       await Promise.all(requests)
-      saveSession(modelMessages)
+      // Save session after all responses are complete
+      saveSession(finalModelMessages)
     } catch (error) {
       console.error("Error:", error)
       setModelMessages(prev => {
