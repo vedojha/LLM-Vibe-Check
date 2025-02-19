@@ -1,3 +1,4 @@
+// components/chat-sessions.tsx
 import * as React from "react"
 import { usePathname } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
@@ -31,11 +32,4 @@ export function useChatSessions() {
 
   console.log("Returning chat items:", chatItems) // Debug log
   return chatItems
-}
-
-export type ChatSession = {
-  id: string
-  title: string
-  url: string
-  subtitle: string
 } 

@@ -1,3 +1,4 @@
+// app/docs/getting-started/page.tsx
 "use client"
 
 import { Card } from "@/components/ui/card"

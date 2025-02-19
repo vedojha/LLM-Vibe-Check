@@ -1,5 +1,4 @@
 // app/api/claude/route.ts
-/* eslint-disable no-console */
 import { NextRequest } from "next/server";
 import { getApiKey } from "@/lib/get-api-key"
 

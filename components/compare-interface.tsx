@@ -1,3 +1,4 @@
+// components/compare-interface.tsx
 "use client"
 
 import * as React from "react"
@@ -131,9 +132,9 @@ export function CompareInterface() {
     setIsLoading(true)
     const userMessage: Message = { role: "user", content: input }
     
-    // Add user message to all model chats
+    // Add user message only to selected model chats
     const newModelMessages = { ...modelMessages }
-    Object.keys(newModelMessages).forEach(modelId => {
+    selectedModels.forEach(modelId => {
       newModelMessages[modelId] = [...newModelMessages[modelId], userMessage]
     })
     setModelMessages(newModelMessages)
@@ -148,7 +149,7 @@ export function CompareInterface() {
         type: "compare",
         compareMessages: [{
           role: "user",
-          content: Object.fromEntries(MODELS.map(model => [model.id, input]))
+          content: Object.fromEntries(selectedModels.map(modelId => [modelId, input]))
         }],
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -156,17 +157,20 @@ export function CompareInterface() {
       const sessions = JSON.parse(localStorage.getItem("chatSessions") || "[]")
       sessions.unshift(newSession)
       localStorage.setItem("chatSessions", JSON.stringify(sessions))
-      await router.replace(`/compare?session=${newSession.id}`)  // await the navigation
+      await router.replace(`/compare?session=${newSession.id}`)
     }
     
     setInput("")
 
-    // Send request to all models simultaneously
+    // Send request only to selected models simultaneously
     try {
       const finalModelMessages = { ...newModelMessages }
-      const requests = MODELS.map(async model => {
+      const requests = selectedModels.map(async modelId => {
+        const model = MODELS.find(m => m.id === modelId)
+        if (!model) return
+
         const endpoint = `/api/${model.provider}`
-        const messages = [...newModelMessages[model.id], userMessage]
+        const messages = [...newModelMessages[modelId], userMessage]
 
         const response = await fetch(endpoint, {
           method: "POST",
@@ -228,7 +232,7 @@ export function CompareInterface() {
       console.error("Error:", error)
       setModelMessages(prev => {
         const updated = { ...prev }
-        Object.keys(updated).forEach(modelId => {
+        selectedModels.forEach(modelId => {
           updated[modelId] = [
             ...updated[modelId],
             { role: "assistant", content: "Sorry, there was an error processing your request." }
@@ -254,23 +258,23 @@ export function CompareInterface() {
 
       const prompt = `Analyze the following AI model responses and provide a structured analysis with these sections:
 
-1. Comprehensive Synthesis
-Combine the unique insights from each model into a coherent analysis. Focus on the main themes and how different perspectives complement each other.
+                        1. Comprehensive Synthesis
+                        Combine the unique insights from each model into a coherent analysis. Focus on the main themes and how different perspectives complement each other.
 
-2. Notable Differences in Their Approaches
-Highlight the distinct characteristics of each model's response, including differences in:
-- Style and tone
-- Depth of analysis
-- Unique perspectives or insights
-- Special features or approaches
+                        2. Notable Differences in Their Approaches
+                        Highlight the distinct characteristics of each model's response, including differences in:
+                        - Style and tone
+                        - Depth of analysis
+                        - Unique perspectives or insights
+                        - Special features or approaches
 
-3. Summary of Key Points
-List the main points that multiple models agreed upon, emphasizing the consensus views and shared insights.
+                        3. Summary of Key Points
+                        List the main points that multiple models agreed upon, emphasizing the consensus views and shared insights.
 
-Format each section with clear headers and use paragraphs for readability.
+                        Format each section with clear headers and use paragraphs for readability.
 
-Responses:
-${lastMessages}`
+                        Responses:
+                        ${lastMessages}`
 
       const response = await fetch('/api/openai', {
         method: 'POST',
@@ -328,7 +332,7 @@ ${lastMessages}`
 
   return (
     <div className="w-full flex justify-center">
-      <Card className="w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
+      <Card className="w-[1400px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
         <div className="w-full flex flex-col h-full">
           {/* Model Selection Pills */}
           <div className="border-b p-4 flex-shrink-0">

@@ -1,3 +1,4 @@
+// components/nav-main.tsx
 "use client"
 
 import { ChevronRight, type LucideIcon, Trash2 } from "lucide-react"
@@ -20,29 +21,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { useChatSessions } from "@/components/chat-sessions"
-import type { ChatSession } from "@/components/chat-sessions"
-
-interface SubItem {
-  title: string
-  url: string
-  subtitle?: string
-  component?: typeof Link
-}
-
-// Add this type
-type HistoryItem = {
-  title: string
-  url: string
-  subtitle: string
-}
-
-interface NavItem {
-  title: string
-  url: string
-  icon?: LucideIcon
-  isActive?: boolean
-  items?: (SubItem | HistoryItem)[]
-}
+import type { ChatSession } from "@/types/chat"
+import type { NavItem, SubItem, HistoryItem } from "@/types/navigation"
 
 export function NavMain({ items }: { items: NavItem[] }) {
   const chatSessions = useChatSessions()

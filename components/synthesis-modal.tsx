@@ -1,3 +1,4 @@
+// components/synthesis-modal.tsx
 "use client"
 
 import * as React from "react"

@@ -1,5 +1,4 @@
 // app/api/openai/route.ts
-/* eslint-disable no-console */
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 

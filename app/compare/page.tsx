@@ -1,7 +1,7 @@
+// app/compare/page.tsx
 "use client"
 
 import { CompareInterface } from "@/components/compare-interface"
-import { Card } from "@/components/ui/card"
 
 export default function ComparePage() {
   return (
