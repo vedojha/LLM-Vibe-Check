@@ -221,7 +221,7 @@ export function ChatInterface() {
 
   return (
     <div className="w-full flex justify-center">
-      <Card className="w-[1024px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
+      <Card className="w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
         <div className="w-full flex flex-col h-full">
           <div className="border-b p-4 flex-shrink-0">
             <Select value={selectedModel} onValueChange={setSelectedModel}>

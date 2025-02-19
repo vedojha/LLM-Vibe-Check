@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Send, Wand2 } from "lucide-react"
+import { Send, Wand2, Bot, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -53,6 +53,7 @@ export function CompareInterface() {
   const [isSynthesisModalOpen, setIsSynthesisModalOpen] = React.useState(false)
   const [synthesisContent, setSynthesisContent] = React.useState("")
   const [isSynthesizing, setIsSynthesizing] = React.useState(false)
+  const [selectedModels, setSelectedModels] = React.useState<string[]>([MODELS[0].id])
 
   // Load session if exists
   React.useEffect(() => {
@@ -315,89 +316,147 @@ ${lastMessages}`
     }
   }
 
-  return (
-    <div className="w-full h-[calc(100vh-4rem)] flex flex-col p-4 gap-4">
-      <div className="grid grid-cols-4 gap-4 h-[calc(100vh-13rem)]">
-        {MODELS.map(model => (
-          <Card 
-            key={model.id} 
-            className="flex flex-col border-none rounded-none min-w-[300px] w-full overflow-hidden"
-          >
-            <div className="border-b p-4 flex-shrink-0 flex justify-center items-center">
-              <h3 className="font-medium text-center">{model.name}</h3>
-            </div>
-            <ScrollArea className="flex-1">
-              <div className="flex flex-col px-4 py-4 space-y-4">
-                {modelMessages[model.id].map((message, index) => (
-                  <div
-                    key={index}
-                    className="flex w-full"
-                  >
-                    <div
-                      className={`max-w-[400px] ${
-                        message.role === "user"
-                          ? "ml-auto"
-                          : "mr-auto"
-                      }`}
-                    >
-                      <div
-                        className={`inline-block px-4 py-3 rounded-2xl ${
-                          message.role === "user"
-                            ? "bg-primary text-primary-foreground rounded-tr-none"
-                            : "bg-secondary rounded-tl-none"
-                        } shadow-sm`}
-                      >
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
-                          {message.content}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            </ScrollArea>
-          </Card>
-        ))}
-      </div>
+  const handleSelectModel = (modelId: string) => {
+    if (selectedModels.length < 4) {
+      setSelectedModels(prev => [...prev, modelId])
+    }
+  }
 
-      <div className="w-full max-w-[1200px] mx-auto px-4">
-        <form onSubmit={handleSubmit} className="flex gap-2 items-center">
-          <Textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 h-[44px] max-h-[120px] resize-none focus-visible:ring-1 py-2"
-            onKeyDown={e => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault()
-                handleSubmit(e)
-              }
-            }}
-          />
-          <Button 
-            type="submit" 
-            size="icon"
-            disabled={isLoading}
-            className="h-[44px] w-[44px] rounded-full shrink-0"
-          >
-            <Send className="h-5 w-5" />
-          </Button>
-          {modelMessages[Object.keys(modelMessages)[0]].length > 0 && (
-            <Button
-              type="button"
-              size="icon"
-              variant="secondary"
-              onClick={handleSynthesis}
-              disabled={isLoading || isSynthesizing}
-              className="h-[44px] w-[44px] rounded-full shrink-0"
-              title="Synthesize AI responses"
-            >
-              <Wand2 className="h-5 w-5" />
-            </Button>
-          )}
-        </form>
-      </div>
+  const handleRemoveModel = (modelId: string) => {
+    setSelectedModels(prev => prev.filter(id => id !== modelId))
+  }
+
+  return (
+    <div className="w-full flex justify-center">
+      <Card className="w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none">
+        <div className="w-full flex flex-col h-full">
+          {/* Model Selection Pills */}
+          <div className="border-b p-4 flex-shrink-0">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {MODELS.map(model => {
+                const isSelected = selectedModels.includes(model.id)
+                return (
+                  <Button
+                    key={model.id}
+                    variant={isSelected ? "default" : "outline"}
+                    size="sm"
+                    className={`
+                      gap-2 transition-all duration-200
+                      ${isSelected ? 'ring-2 ring-primary' : 'hover:bg-muted'}
+                    `}
+                    onClick={() => isSelected ? handleRemoveModel(model.id) : handleSelectModel(model.id)}
+                  >
+                    <Bot className="h-4 w-4" />
+                    {model.name}
+                    {isSelected && (
+                      <X className="h-3 w-3 text-muted-foreground" />
+                    )}
+                  </Button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Chat Area */}
+          <div className="flex-1 min-h-0">
+            <div className={`grid gap-4 w-full h-full p-4
+              ${selectedModels.length === 1 ? 'grid-cols-1' : 
+                selectedModels.length === 2 ? 'grid-cols-2' : 
+                selectedModels.length === 3 ? 'grid-cols-3' : 
+                'grid-cols-4'}
+            `}>
+              {selectedModels.map((modelId) => (
+                <Card key={modelId} className="h-full flex flex-col">
+                  <div className="border-b p-4 flex items-center justify-between flex-shrink-0">
+                    <div className="flex items-center gap-2">
+                      <Bot className="h-5 w-5 text-primary" />
+                      <h3 className="font-medium">{MODELS.find(m => m.id === modelId)?.name}</h3>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleRemoveModel(modelId)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <ScrollArea className="flex-1 h-full">
+                    <div className="flex flex-col p-4 space-y-4">
+                      {modelMessages[modelId].map((message, index) => (
+                        <div
+                          key={index}
+                          className="flex w-full"
+                        >
+                          <div
+                            className={`max-w-[400px] ${
+                              message.role === "user"
+                                ? "ml-auto"
+                                : "mr-auto"
+                            }`}
+                          >
+                            <div
+                              className={`inline-block px-4 py-3 rounded-2xl ${
+                                message.role === "user"
+                                  ? "bg-primary text-primary-foreground rounded-tr-none"
+                                  : "bg-secondary rounded-tl-none"
+                              } shadow-sm`}
+                            >
+                              <p className="whitespace-pre-wrap text-sm leading-relaxed break-words">
+                                {message.content}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </ScrollArea>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Input Area */}
+          <div className="p-4 flex-shrink-0">
+            <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+              <Textarea
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 h-[44px] max-h-[120px] resize-none focus-visible:ring-1 py-2"
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSubmit(e)
+                  }
+                }}
+              />
+              <Button 
+                type="submit" 
+                size="icon"
+                disabled={isLoading}
+                className="h-[44px] w-[44px] rounded-full shrink-0"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+              {modelMessages[Object.keys(modelMessages)[0]].length > 0 && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="secondary"
+                  onClick={handleSynthesis}
+                  disabled={isLoading || isSynthesizing}
+                  className="h-[44px] w-[44px] rounded-full shrink-0"
+                  title="Synthesize AI responses"
+                >
+                  <Wand2 className="h-5 w-5" />
+                </Button>
+              )}
+            </form>
+          </div>
+        </div>
+      </Card>
 
       <SynthesisModal
         isOpen={isSynthesisModalOpen}
