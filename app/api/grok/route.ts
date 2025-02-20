@@ -1,6 +1,7 @@
 // app/api/grok/route.ts
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
+import { getApiKey } from "@/lib/get-api-key"
 
 export const runtime = "nodejs";
 
@@ -13,7 +14,8 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, systemPrompt, temperature, maxTokens } = await req.json();
 
-    if (!process.env.XAI_API_KEY) {
+    const apiKey = getApiKey("XAI_API_KEY", req);
+    if (!apiKey) {
       return new Response("Missing xAI API Key", { status: 500 });
     }
     if (!messages || !Array.isArray(messages)) {
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     const openai = new OpenAI({
-      apiKey: process.env.XAI_API_KEY!,
+      apiKey: apiKey,
       baseURL: "https://api.x.ai/v1",
     });
 

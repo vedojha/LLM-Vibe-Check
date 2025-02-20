@@ -166,9 +166,23 @@ export function ChatInterface() {
           throw new Error(`Unsupported provider: ${model.provider}`)
       }
 
+      const getStoredApiKeys = () => {
+        try {
+          const stored = localStorage.getItem('api_keys');
+          return stored ? JSON.parse(stored) : {};
+        } catch (error) {
+          console.error('Error reading API keys:', error);
+          return {};
+        }
+      };
+
+      const apiKeys = getStoredApiKeys();
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-API-Keys": JSON.stringify(apiKeys)
+        },
         body: JSON.stringify({
           messages: newMessages,
           model: model.id,
@@ -230,12 +244,11 @@ export function ChatInterface() {
   }
 
   return (
-    <div className="w-full flex justify-center">
-      <Card className={cn(
-        "w-[1200px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none",
-        isSidebarOpen && "pointer-events-none"
-      )}>
+    <div className="w-full h-full flex">
+      {/* No more max-w here; allow full expansion */}
+      <Card className="w-full flex flex-col h-full border-none rounded-none">
         <div className="w-full flex flex-col h-full">
+          {/* Model Selector Header */}
           <div className="border-b p-4 flex-shrink-0">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger className="w-[200px]">
@@ -251,8 +264,9 @@ export function ChatInterface() {
             </Select>
           </div>
 
+          {/* Messages area */}
           <ScrollArea className="flex-1 h-0 min-h-0">
-            <div className="flex flex-col px-4 py-4 space-y-4">
+            <div className="flex flex-col p-4 space-y-4">
               {messages.map((message, index) => (
                 <div
                   key={index}
@@ -283,6 +297,7 @@ export function ChatInterface() {
             </div>
           </ScrollArea>
 
+          {/* Input area */}
           <div className="p-4 flex-shrink-0">
             <form onSubmit={handleSubmit} className="flex gap-2 items-center">
               <Textarea
@@ -309,7 +324,8 @@ export function ChatInterface() {
           </div>
         </div>
       </Card>
-      
+
+      {/* ChatControlsSidebar remains absolutely positioned/overlay, or however it's handled */}
       <ChatControlsSidebar
         systemPrompt={systemPrompt}
         temperature={temperature}
@@ -321,4 +337,4 @@ export function ChatInterface() {
       />
     </div>
   )
-} 
+}

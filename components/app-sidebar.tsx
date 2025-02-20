@@ -115,6 +115,11 @@ const data = {
           url: "/docs/getting-started",
           component: Link,
         },
+        {
+          title: "About",
+          url: "/about",
+          component: Link,
+        }
       ],
     },
     {

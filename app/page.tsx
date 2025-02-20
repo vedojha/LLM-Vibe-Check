@@ -1,14 +1,6 @@
 // app/page.tsx
-import { AppSidebar } from "@/components/app-sidebar"
-
-import {
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import IntroductionPage from "./docs/introduction/page"
 
 export default function Page() {
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-    </SidebarProvider>
-  )
+  return <IntroductionPage />
 }

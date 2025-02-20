@@ -1,18 +1,19 @@
-export function getApiKey(envKey: string): string | null {
-  // First try environment variable
-  const envValue = process.env[envKey]
-  if (envValue) {
-    return envValue
+// Get API key from environment variables or localStorage
+export function getApiKey(keyName: string, req?: Request): string | null {
+  // Check environment variable first
+  if (process.env[keyName]) {
+    return process.env[keyName] || null;
   }
 
-  // Then try localStorage if we're in the browser
-  if (typeof window !== 'undefined') {
-    const savedKeys = localStorage.getItem('api_keys')
-    if (savedKeys) {
-      const keys = JSON.parse(savedKeys)
-      return keys[envKey] || null
+  // If request exists, try to get from headers
+  if (req) {
+    try {
+      const apiKeys = JSON.parse(req.headers.get('x-api-keys') || '{}');
+      return apiKeys[keyName] || null;
+    } catch (error) {
+      console.error('Error parsing API keys from headers:', error);
     }
   }
 
-  return null
+  return null;
 } 

@@ -131,6 +131,16 @@ export function CompareInterface() {
     }
   }, [sessionId])
 
+  const getStoredApiKeys = () => {
+    try {
+      const stored = localStorage.getItem('api_keys');
+      return stored ? JSON.parse(stored) : {};
+    } catch (error) {
+      console.error('Error reading API keys:', error);
+      return {};
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
@@ -177,10 +187,14 @@ export function CompareInterface() {
 
         const endpoint = `/api/${model.provider}`
         const messages = [...newModelMessages[modelId], userMessage]
+        const apiKeys = getStoredApiKeys();
 
         const response = await fetch(endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "X-API-Keys": JSON.stringify(apiKeys)
+          },
           body: JSON.stringify({
             messages,
             model: model.id,
@@ -287,10 +301,16 @@ export function CompareInterface() {
 
       const response = await fetch('/api/openai', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-API-Keys': JSON.stringify(getStoredApiKeys())
+        },
         body: JSON.stringify({
           messages: [{ role: 'user', content: prompt }],
-          model: 'o3-mini'
+          model: 'o3-mini',
+          systemPrompt: "You are a helpful assistant that analyzes and synthesizes AI model responses.",
+          temperature: 0.7,
+          maxTokens: 2048
         })
       })
 
@@ -340,41 +360,43 @@ export function CompareInterface() {
   }
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full h-full flex justify-center overflow-hidden">
       <Card className={cn(
-        "w-[1400px] flex flex-col h-[calc(100vh-4rem)] border-none rounded-none",
+        "w-full h-full flex flex-col border-none rounded-none",
         isSidebarOpen && "pointer-events-none"
       )}>
         <div className="w-full flex flex-col h-full">
-          {/* Model Selection Pills */}
+          {/* Model Selection Pills - Add overflow handling */}
           <div className="border-b p-4 flex-shrink-0">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {MODELS.map(model => {
-                const isSelected = selectedModels.includes(model.id)
-                return (
-                  <Button
-                    key={model.id}
-                    variant={isSelected ? "default" : "outline"}
-                    size="sm"
-                    className={`
-                      gap-2 transition-all duration-200
-                      ${isSelected ? 'ring-2 ring-primary' : 'hover:bg-muted'}
-                    `}
-                    onClick={() => isSelected ? handleRemoveModel(model.id) : handleSelectModel(model.id)}
-                  >
-                    <Bot className="h-4 w-4" />
-                    {model.name}
-                    {isSelected && (
-                      <X className="h-3 w-3 text-muted-foreground" />
-                    )}
-                  </Button>
-                )
-              })}
+            <div className="max-w-full overflow-x-auto">
+              <div className="flex flex-nowrap gap-2 justify-center min-w-fit px-4">
+                {MODELS.map(model => {
+                  const isSelected = selectedModels.includes(model.id)
+                  return (
+                    <Button
+                      key={model.id}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      className={`
+                        gap-2 transition-all duration-200 whitespace-nowrap
+                        ${isSelected ? 'ring-2 ring-primary' : 'hover:bg-muted'}
+                      `}
+                      onClick={() => isSelected ? handleRemoveModel(model.id) : handleSelectModel(model.id)}
+                    >
+                      <Bot className="h-4 w-4" />
+                      {model.name}
+                      {isSelected && (
+                        <X className="h-3 w-3 text-muted-foreground" />
+                      )}
+                    </Button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Chat Area */}
-          <div className="flex-1 min-h-0">
+          {/* Chat Area - Add min-w-0 to prevent flex item overflow */}
+          <div className="flex-1 min-h-0 min-w-0">
             <div className={`grid gap-4 w-full h-full p-4
               ${selectedModels.length === 1 ? 'grid-cols-1' : 
                 selectedModels.length === 2 ? 'grid-cols-2' : 

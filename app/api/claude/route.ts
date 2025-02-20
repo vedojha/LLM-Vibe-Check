@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, model, systemPrompt, temperature, maxTokens } = await req.json();
 
-    const apiKey = getApiKey("ANTHROPIC_API_KEY");
+    const apiKey = getApiKey("ANTHROPIC_API_KEY", req);
     if (!apiKey) {
       return new Response("Missing Anthropic API Key", { status: 500 });
     }

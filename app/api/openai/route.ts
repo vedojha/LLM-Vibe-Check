@@ -1,6 +1,7 @@
 // app/api/openai/route.ts
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
+import { getApiKey } from "@/lib/get-api-key"
 
 export const runtime = "nodejs";
 
@@ -9,15 +10,12 @@ interface Message {
   content: string;
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
-
 export async function POST(req: NextRequest) {
   try {
     const { messages, model, systemPrompt, temperature, maxTokens } = await req.json();
 
-    if (!process.env.OPENAI_API_KEY) {
+    const apiKey = getApiKey("OPENAI_API_KEY", req);
+    if (!apiKey) {
       return new Response("Missing OpenAI API Key", { status: 500 });
     }
     if (!messages || !Array.isArray(messages)) {
@@ -35,6 +33,11 @@ export async function POST(req: NextRequest) {
     if (maxTokens < 1 || maxTokens > 4000) {
       return new Response("Invalid maxTokens", { status: 400 });
     }
+
+    // Create new OpenAI instance with the API key
+    const openai = new OpenAI({
+      apiKey: apiKey,
+    });
 
     // Create completion options based on model
     const completionOptions: any = {
