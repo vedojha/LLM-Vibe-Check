@@ -126,7 +126,7 @@ export default function GettingStartedPage() {
               </div>
               <div>
                 <h2 className="text-2xl font-semibold mb-2">3. Explore Features</h2>
-                <p className="text-xl text-muted-foreground">Make the most of advanced capabilities</p>
+                <p className="text-xl text-muted-foreground">Synthesis is a pretty cool feature</p>
               </div>
             </div>
 

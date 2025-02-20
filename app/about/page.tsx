@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button"
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto py-16 px-8 space-y-16">
+    <div className="max-w-5xl mx-auto py-8 px-8 space-y-8">
       {/* Mission Section */}
       <div className="space-y-6 text-center">
-        <h1 className="text-6xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
           About the Platform
         </h1>
         <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -73,57 +73,9 @@ export default function AboutPage() {
         </Card>
       </div>
 
-      {/* Technical Architecture */}
-      <div className="space-y-6">
-        <h2 className="text-3xl font-bold">Technical Architecture</h2>
-        <div className="bg-muted/30 p-8 rounded-xl space-y-4">
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Built with modern web technologies for maximum performance and security:
-          </p>
-          <ul className="space-y-2 text-muted-foreground">
-            <li>• Next.js 14 with React Server Components</li>
-            <li>• TailwindCSS for responsive design</li>
-            <li>• Client-side API handling for security</li>
-            <li>• Local storage for session management</li>
-            <li>• Real-time streaming responses</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Roadmap */}
-      <div className="space-y-6">
-        <h2 className="text-3xl font-bold">Roadmap</h2>
-        <div className="space-y-4">
-          <div className="bg-muted/30 p-6 rounded-xl">
-            <h3 className="text-xl font-semibold mb-3">Q2 2024</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>• Support for more AI models</li>
-              <li>• Enhanced analysis tools</li>
-              <li>• Custom evaluation metrics</li>
-            </ul>
-          </div>
-          <div className="bg-muted/30 p-6 rounded-xl">
-            <h3 className="text-xl font-semibold mb-3">Q3 2024</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>• Collaborative features</li>
-              <li>• Advanced prompt templates</li>
-              <li>• Performance benchmarking</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="text-center space-y-6">
-        <div className="inline-flex items-center gap-2 text-2xl font-medium">
-          <Heart className="h-8 w-8 text-primary" />
-          Made with love by the community
-        </div>
+      <div className="text-center space-y-8 mt-16">
         <div className="flex gap-4 justify-center">
-          <Button asChild size="lg" className="h-12 px-8 text-lg">
-            <Link href="https://github.com">Contribute on GitHub</Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="h-12 px-8 text-lg">
+          <Button asChild size="lg" className="h-12 px-4 text-lg">
             <Link href="/docs/getting-started">Get Started</Link>
           </Button>
         </div>

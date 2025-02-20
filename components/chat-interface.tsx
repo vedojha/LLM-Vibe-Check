@@ -47,6 +47,7 @@ export function ChatInterface() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const sessionId = searchParams.get("session")
+  const modelParam = searchParams.get("model")
   
   const [messages, setMessages] = React.useState<Message[]>([])
   const [input, setInput] = React.useState("")
@@ -69,6 +70,13 @@ export function ChatInterface() {
       }
     }
   }, [sessionId])
+
+  // Update the selectedModel when the URL parameter changes
+  React.useEffect(() => {
+    if (modelParam && MODELS.some(m => m.id === modelParam)) {
+      setSelectedModel(modelParam)
+    }
+  }, [modelParam])
 
   // Update saveSession to handle empty chats
   const saveSession = React.useCallback((newMessages: Message[], shouldCreateNew = false) => {

@@ -38,14 +38,9 @@ const data = {
   },
   teams: [
     {
-      name: "Personal",
+      name: "Vibe Check",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Work",
-      logo: AudioWaveform,
-      plan: "Startup",
+      plan: "LLM Comparison",
     },
   ],
   navMain: [
@@ -80,23 +75,23 @@ const data = {
       items: [
         {
           title: "GPT-4o",
-          url: "#",
+          url: "/chat?model=gpt-4o",
+          component: Link,
         },
         {
           title: "GPT-o3-mini",
-          url: "#",
+          url: "/chat?model=o3-mini",
+          component: Link,
         },
         {
           title: "Claude-3.5-Sonnet",
-          url: "#",
+          url: "/chat?model=claude-3-5-sonnet-20241022",
+          component: Link,
         },
         {
-          title: "Grok-3",
-          url: "#",
-        },
-        {
-          title: "Gemini-2.0-pro",
-          url: "#",
+          title: "Grok-2",
+          url: "/chat?model=grok-2-latest",
+          component: Link,
         },
       ],
     },

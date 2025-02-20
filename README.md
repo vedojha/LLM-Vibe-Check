@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Model Comparison Platform
+
+A platform for comparing responses from different AI models side by side. This tool allows you to evaluate and analyze outputs from various AI models including OpenAI's GPT models, Anthropic's Claude and xAI's Grok.
+
+## Features
+
+- Real-time comparison of multiple AI models
+- Secure client-side API key storage
+- Response synthesis and analysis
+- Customizable system prompts and parameters
+- Side-by-side model comparison
+- Chat history management
+- Markdown support
+- Dark/Light mode
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- npm or yarn
+- API keys for the models you want to use
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <your-repo-url>
+cd <repo-name>
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local`
+   - Fill in your API keys in `.env.local`
+```bash
+cp .env.example .env.local
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+The following API keys are required to run the application:
 
-To learn more about Next.js, take a look at the following resources:
+- `OPENAI_API_KEY` - OpenAI API key for GPT models
+- `ANTHROPIC_API_KEY` - Anthropic API key for Claude models
+- `XAI_API_KEY` - xAI API key for Grok
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+You can also configure these keys in the application settings after launching.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+├── app/                  # Next.js app directory
+│   ├── api/             # API route handlers
+│   ├── chat/            # Chat interface pages
+│   ├── compare/         # Comparison interface pages
+│   └── docs/            # Documentation pages
+├── components/          # React components
+├── lib/                 # Utility functions
+├── public/             # Static assets
+└── types/              # TypeScript type definitions
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- API keys are stored securely in the browser's local storage
+- Keys are never sent to our servers
+- All API calls are made directly from the client to the respective services
+- Environment variables are properly handled using Next.js
+
+## Development
+
+This project uses:
+- [Next.js](https://nextjs.org/) - React framework
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Radix UI](https://www.radix-ui.com/) - UI components
+- [Shadcn UI](https://ui.shadcn.com/) - UI components
+- [Lucide](https://lucide.dev/) - Icons
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## Support
+
+If you encounter any issues or have questions, please file an issue on the GitHub repository.
