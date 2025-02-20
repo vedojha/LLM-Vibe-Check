@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { Github, Heart, Lock, Rocket, Users } from "lucide-react"
+import { Github, Lock, Rocket, Users } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -20,6 +20,46 @@ export default function AboutPage() {
 
       {/* Core Values Grid */}
       <div className="grid md:grid-cols-2 gap-8">
+
+
+        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Github className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-2xl font-semibold">Combine LLM Responses</h3>
+          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Combine LLM responses and synthesize them into a single, comprehensive output. Identify key differences and strengths of each model.
+          </p>
+        </Card>
+
+        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Users className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-2xl font-semibold">Customizable Controls</h3>
+          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Fine-tune model behavior with adjustable parameters. Customize system prompts,
+            temperature, and token limits for optimal results.
+          </p>
+        </Card>
+
+        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Rocket className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-2xl font-semibold">Multi-Model Support</h3>
+          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Access leading AI models from OpenAI, Anthropic, and xAI. Compare up to four
+            models simultaneously with our intuitive interface.
+          </p>
+        </Card>
+
         <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-primary/10">
@@ -30,45 +70,6 @@ export default function AboutPage() {
           <p className="text-muted-foreground text-lg leading-relaxed">
             Your API keys and data never leave your browser. We use client-side encryption
             and local storage to ensure maximum security and privacy.
-          </p>
-        </Card>
-
-        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-primary/10">
-              <Github className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold">Open Source</h3>
-          </div>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Built in the open with the community. Our code is freely available on GitHub,
-            and we welcome contributions from developers worldwide.
-          </p>
-        </Card>
-
-        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-primary/10">
-              <Users className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold">Community Driven</h3>
-          </div>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Developed based on real needs from AI researchers, developers, and enthusiasts.
-            Your feedback shapes our roadmap.
-          </p>
-        </Card>
-
-        <Card className="p-8 space-y-4 hover:shadow-lg transition-shadow border-0 bg-muted/30 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-primary/10">
-              <Rocket className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-2xl font-semibold">Future Ready</h3>
-          </div>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Continuously evolving to support new models, features, and use cases as the
-            AI landscape expands.
           </p>
         </Card>
       </div>

@@ -2,7 +2,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { Bot, Wand2, Scale, Zap, Brain, GitCompare } from "lucide-react"
+import { Scale, Zap, Brain, GitCompare } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 

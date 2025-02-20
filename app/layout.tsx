@@ -32,19 +32,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="bg-background text-foreground">
         <SidebarProvider>
-          {/* Use w-full to ensure the outer container takes full width */}
           <div className="flex h-screen w-full">
-            {/* Sidebar occupies fixed width on the left */}
             <AppSidebar />
             
-            {/* Main content container (flex-1) takes the remaining width */}
             <div className="flex-1 flex flex-col min-w-0">
-              {/* Header with navigation */}
               <header className="border-b flex-shrink-0 h-16 w-full">
-                {/* 
-                  Use w-full on this container and justify-center 
-                  so nav items remain horizontally centered.
-                */}
                 <div className="h-full w-full flex items-center justify-center px-4">
                   <NavigationMenu>
                     <NavigationMenuList>
@@ -79,7 +71,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </header>
 
-              {/* Main content area */}
               <main className="flex-1 overflow-auto min-w-0">
                 {children}
               </main>

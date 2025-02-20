@@ -3,7 +3,6 @@
 
 import { ChevronRight, type LucideIcon, Trash2 } from "lucide-react"
 import React from "react"
-import Link from "next/link"
 
 import {
   Collapsible,

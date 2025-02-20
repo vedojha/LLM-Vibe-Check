@@ -18,7 +18,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { v4 as uuidv4 } from "uuid"
 import type { ChatSession, Message } from "@/types/chat"
 import { ChatControlsSidebar } from "@/components/chat-controls-sidebar"
-import { cn } from "@/lib/utils"
 
 const MODELS = [
   {
